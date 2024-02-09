@@ -1,90 +1,144 @@
-var modal = document.querySelector(".modal");
-var trigger = document.querySelector(".trigger");
-var closeButton = document.querySelector(".close-button");
+// Select DOM elements
+const recipeNameInput = document.getElementById("recipeName");
+const imageURLInput = document.getElementById("imageURL");
+const recipeIngredientTextarea = document.getElementById("recipeIngredient");
+const recipeInstructionTextarea = document.getElementById("recipeInstruction");
+const submitButton = document.getElementById("Submit");
+const updateButton = document.getElementById("Update");
+const recipeContainerDiv = document.getElementById("recipeContainer");
+const recipeId = document.getElementById("recipeId");
 
-function toggleModal() {
-    modal.classList.toggle("show-modal");
+// Load recipes from local storage
+function loadRecipes() {
+  const recipes = JSON.parse(localStorage.getItem("recipes")) || [];
+  recipeContainerDiv.innerHTML = " ";
+  recipes.forEach((recipe) => {
+    const recipeElement = createRecipeElement(recipe);
+    recipeContainerDiv.appendChild(recipeElement);
+  });
 }
 
-function windowOnClick(event) {
-    if (event.target === modal) {
-        toggleModal();
+// Create a new recipe element
+function createRecipeElement(recipe) {
+  const recipeElement = document.createElement("div");
+  recipeElement.innerHTML = `
+  <div class="recipeList" id="recipeList">
+  <div class="col-6">
+    <div class="details col-12">
+        <h2>${recipe.name}</h2>
+        <p><strong>Ingredient : </strong></p>
+        <p>${recipe.ingredients}</p>
+        <p><strong>Instructions : </strong></p>
+        <p>${recipe.instructions}</p>
+    </div>
+    <div class="col-12">
+        <button class="btn btn-primary" onclick="updateRecipe('${recipe.name}')">Edit</button>
+        <button class="btn btn-danger" onclick="deleteRecipe('${recipe.name}')">Delete</button>
+    </div>
+</div>
+<div class="col-6">
+    <img src="${recipe.image}" alt="${recipe.name}" />
+</div>
+</div>
+
+    `;
+  return recipeElement;
+}
+
+// Add a new recipe
+function addRecipe() {
+  const recipe = {
+    id:recipeId.value,
+    name: recipeNameInput.value,
+    ingredients: recipeIngredientTextarea.value,
+    instructions: recipeInstructionTextarea.value,
+    image: "", // Placeholder for the image URL
+  };
+  // Check if a file is selected
+  if (imageURLInput.files && imageURLInput.files[0]) {
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      // Set the image URL to the result of the FileReader
+      recipe.image = e.target.result;
+      saveRecipe(recipe);
+      loadRecipes();
+      resetForm();
+    };
+    reader.readAsDataURL(imageURLInput.files[0]);
+  } else {
+    // No file selected, proceed with empty image URL
+    saveRecipe(recipe);
+    loadRecipes();
+    resetForm();
+  }
+}
+
+// Edit a recipe
+function updateRecipe(recipeName) {
+    document.getElementById("Submit").style.display = "none";
+    document.getElementById("Update").style.display = "block";
+    
+    // Find the recipe to edit
+    const recipes = JSON.parse(localStorage.getItem('recipes')) || [];
+    const recipeToEdit = recipes.find((recipe) => recipe.name === recipeName);
+
+    if (recipeToEdit) {
+        // Populate the form fields with the recipe data
+        recipeNameInput.value = recipeToEdit.name;
+        recipeIngredientTextarea.value = recipeToEdit.ingredients;
+        recipeInstructionTextarea.value = recipeToEdit.instructions;
+        // Assuming you have a function to toggle the visibility of the form
+         // Call this function to show the form
+    } else {
+        alert('Recipe not found');
     }
 }
 
-trigger.addEventListener("click", toggleModal);
-closeButton.addEventListener("click", toggleModal);
-window.addEventListener("click", windowOnClick);
-
-
-// Function to handle form submission
-function addRecipe(event) {
-    // Prevent default form submission behavior
+// Event listener for the form submission
+document.getElementById('Update').addEventListener('click', (event) => {
     event.preventDefault();
-
-    // Get form input values
-    const recipeName = document.getElementById('recipeName').value;
-    const ingredients = document.getElementById('ingredients').value;
-    const instructions = document.getElementById('instructions').value;
-    const imageUrl = document.getElementById('image').value;
-
-    // Create recipe object
-    const recipe = {
-        name: recipeName,
-        ingredients: ingredients,
-        instructions: instructions,
-        image: imageUrl
+    const updatedRecipe = {
+        name: recipeNameInput.value,
+        ingredients: recipeIngredientTextarea.value,
+        instructions: recipeInstructionTextarea.value,
+        image: imageURLInput.value // This will be the URL if the user has uploaded a new image, or an empty string if not
     };
+    saveRecipe(updatedRecipe);
+    loadRecipes();
+    // Close the modal after updating the recipe
+});
 
-    // Save recipe to local storage
-    saveRecipe(recipe);
-
-    // Clear form fields
-    document.getElementById('recipeForm').reset();
-
-    // Display updated recipe list
-    displayRecipes();
+// Delete a recipe
+function deleteRecipe(recipeName) {
+  const recipes = JSON.parse(localStorage.getItem("recipes")) || [];
+  const updatedRecipes = recipes.filter((recipe) => recipe.name !== recipeName);
+  localStorage.setItem("recipes", JSON.stringify(updatedRecipes));
+  loadRecipes();
 }
 
-// Function to save recipe to local storage
+// Save a recipe to local storage
 function saveRecipe(recipe) {
-    // Retrieve existing recipes or initialize empty array
-    let recipes = JSON.parse(localStorage.getItem('recipes')) || [];
-    // Add new recipe to the array
+  const recipes = JSON.parse(localStorage.getItem("recipes")) || [];
+  const existingRecipeIndex = recipes.findIndex((r) => r.id === recipe.id);
+  if (existingRecipeIndex >= 0) {
+    recipes[existingRecipeIndex] = recipe;
+  } else {
     recipes.push(recipe);
-    // Save updated array back to local storage
-    localStorage.setItem('recipes', JSON.stringify(recipes));
+  }
+  localStorage.setItem("recipes", JSON.stringify(recipes));
 }
 
-// Function to display recipes
-function displayRecipes() {
-    // Clear previous recipes displayed
-    const recipesList = document.getElementById('recipesList');
-    recipesList.innerHTML = '';
-
-    // Retrieve recipes from local storage
-    const recipes = JSON.parse(localStorage.getItem('recipes')) || [];
-
-    // Iterate through recipes and display them
-    recipes.forEach(recipe => {
-        const recipeItem = document.createElement('div');
-        recipeItem.classList.add('recipe');
-
-        // Create HTML content for recipe
-        recipeItem.innerHTML = `
-            <h3>${recipe.name}</h3>
-            <p><strong>Ingredients:</strong> ${recipe.ingredients}</p>
-            <p><strong>Instructions:</strong> ${recipe.instructions}</p>
-            <img src="${recipe.image}" alt="${recipe.name}" class="recipe-image">
-        `;
-
-        // Append recipe to the recipes list
-        recipesList.appendChild(recipeItem);
-    });
+// Reset the form fields
+function resetForm() {
+  recipeNameInput.value = "";
+  imageURLInput.value = "";
+  recipeIngredientTextarea.value = "";
+  recipeInstructionTextarea.value = "";
 }
 
-// Event listener for form submission
-document.getElementById('recipeForm').addEventListener('submit', addRecipe);
+// Initialize the app
+loadRecipes();
 
-// Display recipes on page load
-displayRecipes();
+// Event listeners for buttons
+submitButton.addEventListener("click", addRecipe);
+updateButton.addEventListener("click", updateRecipe);
