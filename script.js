@@ -87,6 +87,8 @@ function updateRecipe(recipeName) {
         recipeNameInput.value = recipeToEdit.name;
         recipeIngredientTextarea.value = recipeToEdit.ingredients;
         recipeInstructionTextarea.value = recipeToEdit.instructions;
+
+        saveRecipe();
         // Assuming you have a function to toggle the visibility of the form
          // Call this function to show the form
     } else {
