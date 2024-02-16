@@ -70,7 +70,7 @@ function updateRecipe(recipeName) {
         recipeIngredientTextarea.value = recipeToEdit.ingredients;
         recipeInstructionTextarea.value = recipeToEdit.instructions;
         recipeId.value = recipeToEdit.id; // Set the recipe ID to the ID of the recipe to edit
-        imageURLinput = recipeToEdit.imageURLinput;
+        imageURLinput.value = recipeToEdit.imageURLinput;
         // Show the form for editing
         // Assuming you have a function to toggle the visibility of the form
         // Call this function to show the form
