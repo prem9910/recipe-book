@@ -18,7 +18,7 @@ function addRecipe() {
 
     // Create a recipe object
     const recipe = {
-        id: Date.now(), // Generate a unique ID using the current timestamp
+        id: isUpdating ? recipeId.value : Date.now(), // Use the existing ID if updating, otherwise generate a new one
         name: recipeNameInput.value,
         ingredients: recipeIngredientTextarea.value,
         instructions: recipeInstructionTextarea.value,
@@ -70,7 +70,7 @@ function updateRecipe(recipeName) {
         recipeIngredientTextarea.value = recipeToEdit.ingredients;
         recipeInstructionTextarea.value = recipeToEdit.instructions;
         recipeId.value = recipeToEdit.id; // Set the recipe ID to the ID of the recipe to edit
-
+        imageURLinput = recipeToEdit.imageURLinput;
         // Show the form for editing
         // Assuming you have a function to toggle the visibility of the form
         // Call this function to show the form
@@ -78,8 +78,9 @@ function updateRecipe(recipeName) {
         alert('Recipe not found');
     }
 
-    
-// }
+    console.log(recipeToEdit.id);
+   
+}
 
 
 // Delete a recipe
@@ -91,21 +92,25 @@ function deleteRecipe(recipeName) {
   }
 
 
-function saveRecipe(recipe) {
-    const recipes = JSON.parse(localStorage.getItem("recipes")) || [];
-    const existingRecipeIndex = recipes.findIndex((r) => r.id === recipe.id);
+  function saveRecipe(recipe) {
+    let recipes = JSON.parse(localStorage.getItem("recipes")) || [];
+    const existingRecipeIndex = recipes.findIndex((r) => r.name === recipe.name);
+    console.log('Existing recipe index:', existingRecipeIndex); // Debugging statement
+    console.log('Current recipes:', recipes); // Debugging statement
+
     if (existingRecipeIndex >=  0) {
         recipes[existingRecipeIndex] = recipe;
     } else {
         recipes.push(recipe);
     }
-    localStorage.setItem("recipes", JSON.stringify(recipes));
 
-    
+    console.log('Updated recipes:', recipes); // Debugging statement
+    localStorage.setItem("recipes", JSON.stringify(recipes));
 }
+    
 
 // Event listener for the Update button
-document.getElementById('Update').addEventListener('change', (event) => {
+document.getElementById('Update').addEventListener('click', (event) => {
     event.preventDefault(); // Prevent the default form submission behavior
 
     // Create an updated recipe object
@@ -122,7 +127,7 @@ document.getElementById('Update').addEventListener('change', (event) => {
 
     // Refresh the list of recipes in the UI
     loadRecipes();
-
+    console.log(updatedRecipe.id)
     // Reset the form fields and hide the Update button
     resetForm();
     document.getElementById('Update').style.display = 'none';
@@ -162,3 +167,5 @@ function resetForm() {
     recipeIngredientTextarea.value = "";
     recipeInstructionTextarea.value = "";
   }
+
+  loadRecipes();
