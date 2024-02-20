@@ -18,7 +18,7 @@ function addRecipe() {
 
     // Create a recipe object
     const recipe = {
-        id: isUpdating ? recipeId.value : Date.now(), // Use the existing ID if updating, otherwise generate a new one
+        id: Date.now(), // Use the existing ID if updating, otherwise generate a new one
         name: recipeNameInput.value,
         ingredients: recipeIngredientTextarea.value,
         instructions: recipeInstructionTextarea.value,
