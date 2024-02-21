@@ -47,7 +47,7 @@ function addRecipe() {
       resetForm();
     }
   }
-  
+
 
 function loadRecipes() {
   const recipes = JSON.parse(localStorage.getItem("recipes")) || [];
