@@ -1,3 +1,7 @@
+const form = document.getElementById("myForm");
+const modal = document.getElementById("recipeForm");
+const modalTitle = document.querySelector("#recipeForm .modal-title");
+const newRecipeBtn = document.querySelector(".newRecipe");
 const recipeNameInput = document.getElementById("recipeName");
 const imageURLInput = document.getElementById("imageURL");
 const recipeIngredientTextarea = document.getElementById("recipeIngredient");
@@ -7,175 +11,125 @@ const updateButton = document.getElementById("Update");
 const recipeContainerDiv = document.getElementById("recipeContainer");
 const recipeId = document.getElementById("recipeId");
 
-function addRecipe() {
-    if (
-      !recipeNameInput.value ||
-      !recipeIngredientTextarea.value ||
-      !recipeInstructionTextarea.value
-    ) {
-      alert("Please fill out all required fields");
-      return;
-    }
-  
-    // Check if the form is in update mode
-    const isUpdateMode = document.getElementById("Update").style.display === "block";
-  
-    // Create a recipe object
-    const recipe = {
-      id: isUpdateMode ? recipeId.value : Date.now(), // Use existing ID if in update mode, otherwise generate a new one
-      name: recipeNameInput.value,
-      ingredients: recipeIngredientTextarea.value,
-      instructions: recipeInstructionTextarea.value,
-      image: "", // Placeholder for the image URL
-    };
-  
-    // Check if a file is selected
-    if (imageURLInput.files && imageURLInput.files[0]) {
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        // Set the image URL to the result of the FileReader
-        recipe.image = e.target.result;
-        saveRecipe(recipe);
-        loadRecipes();
-        resetForm();
-      };
-      reader.readAsDataURL(imageURLInput.files[0]);
-    } else {
-      // No file selected, proceed with empty image URL
-      saveRecipe(recipe);
-      loadRecipes();
-      resetForm();
-    }
-  }
+let getData = localStorage.getItem("recipes")
+  ? JSON.parse(localStorage.getItem("recipes"))
+  : [];
 
+let isEdit = false,
+  editId;
+showInfo();
 
-function loadRecipes() {
-  const recipes = JSON.parse(localStorage.getItem("recipes")) || [];
-  recipeContainerDiv.innerHTML = "";
-  recipes.forEach((recipe) => {
-    const recipeElement = createRecipeElement(recipe);
-    recipeContainerDiv.appendChild(recipeElement);
-  });
-}
-
-function updateRecipe(recipeName) {
-    document.getElementById("Submit").style.display = "none";
-    document.getElementById("Update").style.display = "block";
-  
-    const recipes = JSON.parse(localStorage.getItem("recipes")) || [];
-    const recipeToEdit = recipes.find((recipe) => recipe.name === recipeName);
-  
-    if (recipeToEdit) {
-      recipeNameInput.value = recipeToEdit.name;
-      recipeIngredientTextarea.value = recipeToEdit.ingredients;
-      recipeInstructionTextarea.value = recipeToEdit.instructions;
-      recipeId.value = recipeToEdit.id;
-  
-      const imageElement = document.getElementById("imageURL");
-      if (imageElement) {
-        imageElement.src = recipeToEdit.image;
-        imageElement.alt = recipeToEdit.name;
-      } else {
-        console.error('Image element with ID "currentImage" not found');
-      }
-  
-      // Assign the existing recipe's ID to the recipe object
-      recipe.id = recipeToEdit.id; // Ensure the ID remains the same
-    } else {
-      alert("Recipe not found");
-    }
-  }
-  
-
-function deleteRecipe(recipeName) {
-  const recipes = JSON.parse(localStorage.getItem("recipes")) || [];
-  const updatedRecipes = recipes.filter((recipe) => recipe.name !== recipeName);
-  localStorage.setItem("recipes", JSON.stringify(updatedRecipes));
-  loadRecipes();
-}
-
-function saveRecipe(recipe) {
-    let recipes = JSON.parse(localStorage.getItem("recipes")) || [];
-    const existingRecipeIndex = recipes.findIndex((r) => r.id === recipe.id);
-
-    if (existingRecipeIndex >= 0) {
-        recipes[existingRecipeIndex] = recipe; // Replace the existing recipe with the updated one
-    } else {
-        recipes.push(recipe); // Add the new recipe if it doesn't already exist
-    }
-
-    localStorage.setItem("recipes", JSON.stringify(recipes));
-}
-
-
-
-document.getElementById("Update").addEventListener("click", (event) => {
-  event.preventDefault();
-
-  if (imageURLInput.files && imageURLInput.files[0]) {
-    const reader = new FileReader();
-    reader.onload = function (e) {
-      const updatedRecipe = {
-        id: recipeId.value,
-        name: recipeNameInput.value,
-        ingredients: recipeIngredientTextarea.value,
-        instructions: recipeInstructionTextarea.value,
-        image: e.target.result,
-      };
-      saveRecipe(updatedRecipe);
-      loadRecipes();
-      resetForm();
-      document.getElementById("Update").style.display = "none";
-      document.getElementById("Submit").style.display = "block";
-    };
-    reader.readAsDataURL(imageURLInput.files[0]);
-  } else {
-    const updatedRecipe = {
-      id: recipeId.value,
-      name: recipeNameInput.value,
-      ingredients: recipeIngredientTextarea.value,
-      instructions: recipeInstructionTextarea.value,
-      image: imageURLInput.value,
-    };
-    saveRecipe(updatedRecipe);
-    loadRecipes();
-    resetForm();
-    document.getElementById("Update").style.display = "none";
-    document.getElementById("Submit").style.display = "block";
-  }
+newRecipeBtn.addEventListener("click", () => {
+  (submitButton.innerText = "Submit"), (modalTitle.innerText = "Fill the Form");
+  isEdit = false;
+  // imgInput.src = "./image/Profile Icon.webp";
+  form.reset();
 });
 
-function createRecipeElement(recipe) {
-  const recipeElement = document.createElement("div");
-  recipeElement.className = "recipe";
-  recipeElement.innerHTML = `
-            <div class="recipeList" id="recipeList">
-            <div class="col-6">
-            <div class="details col-12">
-                <h2>${recipe.name}</h2>
-                <p><strong>Ingredient : </strong></p>
-                <p>${recipe.ingredients}</p>
-                <p><strong>Instructions : </strong></p>
-                <p>${recipe.instructions}</p>
-            </div>
-            <div class="col-12">
-                <button class="btn btn-primary" onclick="updateRecipe('${recipe.name}')">Edit</button>
-                <button class="btn btn-danger" onclick="deleteRecipe('${recipe.name}')">Delete</button>
-            </div>
-        </div>
-        <div class="col-6">
-            <img src="${recipe.image}" alt="${recipe.name}" />
-        </div>
-        </div>
-    `;
-  return recipeElement;
+// file.onchange = function () {
+//   if (file.files[0].size < 1000000) {
+//     // 1MB = 1000000
+//     var fileReader = new FileReader();
+
+//     fileReader.onload = function (e) {
+//       imgUrl = e.target.result;
+//       imageURLInput.src = imgUrl;
+//     };
+
+//     fileReader.readAsDataURL(file.files[0]);
+//   } else {
+//     alert("This file is too large!");
+//   }
+// };
+
+function showInfo() {
+  document
+    .querySelectorAll(".recipeList")
+    .forEach((info) => info.remove());
+  getData.forEach((recipe, index) => {
+    let createElement = `
+    <div class="recipeList" id="recipeList">
+    <div class="col-6">
+    <div class="details col-12">
+        <h2>${recipe.recipeName}</h2>
+        <p><strong>Ingredient : </strong></p>
+        <p>${recipe.recipeIngredient}</p>
+        <p><strong>Instructions : </strong></p>
+        <p>${recipe.recipeInstruction}</p>
+    </div>
+    <div class="col-12">
+        <button class="btn btn-primary" onclick="editRecipe('${index}','${recipe.recipeName}', '${recipe.recipeIngredient}', '${recipe.recipeInstruction}','${recipe.image}')">Edit</button>
+        <button class="btn btn-danger" onclick="deleteRecipe('${index}')">Delete</button>
+    </div>
+</div>
+<div class="col-6">
+    <img src="${recipe.image}" alt="${recipe.recipeName}" />
+</div>
+</div>`;
+
+
+
+
+recipeContainerDiv.innerHTML += createElement;
+  });
+}
+showInfo();
+
+
+function editRecipe(index,recipeName,recipeIngredient,recipeInstruction,imageURL) {
+  isEdit = true;
+  editId = index;
+  imageURLInput.src = imageURL;
+  recipeNameInput.value = recipeName;
+  recipeIngredientTextarea.value = recipeIngredient;
+  recipeInstructionTextarea.value = recipeInstruction;
+  submitButton.innerText = "Update";
+  modalTitle.innerText = "Update The Form";
+
+  console.log(editId);
 }
 
-function resetForm() {
-  recipeNameInput.value = "";
-  imageURLInput.value = "";
-  recipeIngredientTextarea.value = "";
-  recipeInstructionTextarea.value = "";
+function deleteRecipe(index) {
+  if (confirm("Are you sure want to delete?")) {
+    getData.splice(index, 1);
+    localStorage.setItem("recipes", JSON.stringify(getData));
+    showInfo();
+  }
 }
 
-loadRecipes();
+form.addEventListener("submit", (e) => {
+  e.preventDefault();
+
+  const information = {
+    image:
+      imageURLInput.src == undefined ? "./images/img.jpeg" : imageURLInput.src,
+    recipeName: recipeNameInput.value,
+    recipeIngredient : recipeIngredientTextarea.value,
+    recipeInstruction : recipeInstructionTextarea.value,
+    recipeId : recipeId.value,
+
+  };
+
+  if (!isEdit) {
+    getData.push(information);
+  } else {
+    isEdit = false;
+    getData[editId] = information;
+  }
+
+  localStorage.setItem("recipes", JSON.stringify(getData));
+
+  submitButton.innerText = "Submit";
+  modalTitle.innerHTML = "Fill The Form";
+
+  showInfo();
+
+  form.reset();
+
+  imageURL.src = "./images/img.jpeg";
+
+  // modal.style.display = "none"
+  // document.querySelector(".modal-backdrop").remove()
+});
+
+showInfo();
