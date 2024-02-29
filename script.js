@@ -20,25 +20,24 @@ let isEdit = false,
 showInfo();
 
 newRecipeBtn.addEventListener("click", () => {
-  (submitButton.innerText = "Submit"), (modalTitle.innerText = "Fill the Form");
-  isEdit = false;
-  // imgInput.src = "./images/img.jpeg";
-  form.reset();
+ submitButton.innerText = "Submit";
+ modalTitle.innerText = "Fill the Form";
+ isEdit = false;
+ form.reset();
 });
 
-// file.onchange = function () {
-  
-//     var fileReader = new FileReader();
 
-//     fileReader.onload = function (e) {
-//       imgUrl = e.target.result;
-//       imageURLInput.src = imgUrl;
-//     };
+// Assuming 'file' and 'imgInput' are defined elsewhere in your code
+imageURLInput.onchange = function () {
+    var fileReader = new FileReader();
 
-//     fileReader.readAsDataURL(file.files[0]);
-  
- 
-// };
+    fileReader.onload = function (e) {
+      imgUrl = e.target.result;
+      imageURLInput.src = imgUrl;
+    };
+
+    fileReader.readAsDataURL(imageURLInput.files[0]);
+};
 
 function showInfo() {
   document
@@ -84,7 +83,7 @@ function editRecipe(index,recipeName,recipeIngredient,recipeInstruction,imageURL
   submitButton.innerText = "Update";
   modalTitle.innerText = "Update The Form";
 
-  console.log(image);
+  console.log(imageURL)
 }
 
 function deleteRecipe(index) {
@@ -117,8 +116,8 @@ form.addEventListener("submit", (e) => {
 
   localStorage.setItem("recipes", JSON.stringify(getData));
 
-  submitButton.innerText = "Submit";
-  modalTitle.innerHTML = "Fill The Form";
+  // submitButton.innerText = "Submit";
+  // modalTitle.innerHTML = "Fill The Form";
 
   showInfo();
 
@@ -126,8 +125,8 @@ form.addEventListener("submit", (e) => {
 
   imageURL.src = "./images/img.jpeg";
 
-  // modal.style.display = "none"
-  // document.querySelector(".modal-backdrop").remove()
+  modal.style.display = "none"
+  document.querySelector(".modal-backdrop").remove()
 });
 
 showInfo();
