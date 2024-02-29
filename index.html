@@ -24,6 +24,9 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
+    <div class="container">
+      <h2 class="mt-5 mb-5">Recipe Book</h2>
+      <div class="mb-5">
     <section class="p-3">
       <div class="row">
         <div class="col-12">
@@ -57,6 +60,8 @@
         </div>
       </div>
     </section>
+    </div>
+    </div>
 
     <!--Modal Form-->
     <div class="modal fade" id="recipeForm">
@@ -87,6 +92,7 @@
                     required
                   />
                 </div>
+                
                 <div class="form-group col-md-6 mb-3">
                   <label for="name">Image URL</label>
                   <input
@@ -126,10 +132,8 @@
                     type="submit"
                     form="myForm"
                     class="btn btn-success"
-                    id="Submit"
-                    onclick="addRecipe()"
-                  >
-                    Add Recipe
+                    id="Submit"                   >
+                    
                   </button>
                 </div>
               </div>

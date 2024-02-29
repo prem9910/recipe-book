@@ -22,13 +22,12 @@ showInfo();
 newRecipeBtn.addEventListener("click", () => {
   (submitButton.innerText = "Submit"), (modalTitle.innerText = "Fill the Form");
   isEdit = false;
-  // imgInput.src = "./image/Profile Icon.webp";
+  // imgInput.src = "./images/img.jpeg";
   form.reset();
 });
 
 // file.onchange = function () {
-//   if (file.files[0].size < 1000000) {
-//     // 1MB = 1000000
+  
 //     var fileReader = new FileReader();
 
 //     fileReader.onload = function (e) {
@@ -37,9 +36,8 @@ newRecipeBtn.addEventListener("click", () => {
 //     };
 
 //     fileReader.readAsDataURL(file.files[0]);
-//   } else {
-//     alert("This file is too large!");
-//   }
+  
+ 
 // };
 
 function showInfo() {
@@ -58,7 +56,7 @@ function showInfo() {
         <p>${recipe.recipeInstruction}</p>
     </div>
     <div class="col-12">
-        <button class="btn btn-primary" onclick="editRecipe('${index}','${recipe.recipeName}', '${recipe.recipeIngredient}', '${recipe.recipeInstruction}','${recipe.image}')">Edit</button>
+        <button class="btn btn-primary" onclick="editRecipe('${index}','${recipe.recipeName}', '${recipe.recipeIngredient}', '${recipe.recipeInstruction}','${recipe.image}')" data-bs-toggle="modal" data-bs-target="#recipeForm">Edit</button>
         <button class="btn btn-danger" onclick="deleteRecipe('${index}')">Delete</button>
     </div>
 </div>
@@ -86,7 +84,7 @@ function editRecipe(index,recipeName,recipeIngredient,recipeInstruction,imageURL
   submitButton.innerText = "Update";
   modalTitle.innerText = "Update The Form";
 
-  console.log(editId);
+  console.log(imageURL);
 }
 
 function deleteRecipe(index) {
