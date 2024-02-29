@@ -84,7 +84,7 @@ function editRecipe(index,recipeName,recipeIngredient,recipeInstruction,imageURL
   submitButton.innerText = "Update";
   modalTitle.innerText = "Update The Form";
 
-  console.log(imageURL);
+  console.log(image);
 }
 
 function deleteRecipe(index) {
