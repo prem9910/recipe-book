@@ -232,5 +232,19 @@
     ></script>
 
     <script src="script.js"></script>
+    <script>
+      window.watsonAssistantChatOptions = {
+        integrationID: "17bb3380-a10c-4ccd-a1bf-33a626b6bcab", // The ID of this integration.
+        region: "eu-gb", // The region your integration is hosted in.
+        serviceInstanceID: "c2541755-5bb7-400a-ae82-e128c8686c89", // The ID of your service instance.
+        onLoad: async (instance) => { await instance.render(); }
+      };
+      setTimeout(function(){
+        const t=document.createElement('script');
+        t.src="https://web-chat.global.assistant.watson.appdomain.cloud/versions/" + (window.watsonAssistantChatOptions.clientVersion || 'latest') + "/WatsonAssistantChatEntry.js";
+        document.head.appendChild(t);
+      });
+    </script>
   </body>
+
 </html>
